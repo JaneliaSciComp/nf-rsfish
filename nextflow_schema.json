@@ -48,7 +48,7 @@
                     "help": "Can be determined using the RS-FISH plugin in Fiji.",
                     "fa_icon": "fas fa-cube"
                 },
-                "extra_opts": {
+                "rsfish_opts": {
                     "type": "string",
                     "description": "Extra options for RS-FISH.",
                     "help": "Extra options can be found here: https://github.com/PreibischLab/RS-FISH-Spark/blob/main/src/main/java/net/preibisch/rsfish/spark/SparkRSFISH.java",
