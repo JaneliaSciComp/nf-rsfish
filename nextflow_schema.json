@@ -48,20 +48,10 @@
                     "help": "Can be determined using the RS-FISH plugin in Fiji.",
                     "fa_icon": "fas fa-cube"
                 },
-                "sigma": {
-                    "type": "number",
-                    "description": "Sigma for Difference-of-Gaussian (DoG) calculations. Default: 1.5",
-                    "fa_icon": "fab fa-scribd"
-                },
-                "threshold": {
-                    "type": "number",
-                    "description": "Threshold for Difference-of-Gaussian (DoG) calculations. Default: 0.007",
-                    "fa_icon": "fas fa-cube"
-                },
                 "extra_opts": {
                     "type": "string",
                     "description": "Extra options for RS-FISH.",
-                    "help": "Extra options which can be found here: https://github.com/PreibischLab/RS-FISH-Spark/blob/main/src/main/java/net/preibisch/rsfish/spark/SparkRSFISH.java",
+                    "help": "Extra options can be found here: https://github.com/PreibischLab/RS-FISH-Spark/blob/main/src/main/java/net/preibisch/rsfish/spark/SparkRSFISH.java",
                     "fa_icon": "fas fa-cube"
                 }
             }
