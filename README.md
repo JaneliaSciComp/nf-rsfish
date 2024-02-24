@@ -1,6 +1,6 @@
-# RS-FISH Spark on Nextflow
+# RS-FISH Nextflow Pipeline
 
-Nextflow pipeline wrapper for [PreibischLab/RS-FISH-Spark](https://github.com/PreibischLab/RS-FISH-Spark). Allows you to easily run RS-FISH at scale on any infrastructure supported by Nextflow. 
+Nextflow pipeline wrapper for [PreibischLab/RS-FISH-Spark](https://github.com/PreibischLab/RS-FISH-Spark) which implements "precise, interactive, fast, and scalable FISH spot detection." This pipeline allows you to easily run RS-FISH at scale on any infrastructure supported by Nextflow. 
 
 ## Quick Start
 
