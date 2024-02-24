@@ -3,6 +3,15 @@
   "homePage": "https://github.com/JaneliaSciComp/nf-rsfish",
   "repos": {
     "git@github.com:JaneliaSciComp/nextflow-modules.git": {
+      "modules": {
+        "janelia": {
+          "rs_fish": {
+            "branch": "main",
+            "git_sha": "959adfff0862410b9753faa492906aa5655b611d",
+            "installed_by": ["modules"]
+          }
+        }
+      },
       "subworkflows": {
         "janelia": {
           "spark_start": {

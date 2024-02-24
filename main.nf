@@ -50,7 +50,7 @@ log.info logo + paramsSummaryLog(workflow) + citation
 
 include { SPARK_START                 } from './subworkflows/janelia/spark_start/main'
 include { SPARK_STOP                  } from './subworkflows/janelia/spark_stop/main'
-include { RS_FISH                     } from './modules/local/rs-fish/main'
+include { RS_FISH                     } from './modules/janelia/rs_fish/main'
 include { CUSTOM_DUMPSOFTWAREVERSIONS } from './modules/nf-core/custom/dumpsoftwareversions/main'
 
 workflow RS_FISH_SPARK {
