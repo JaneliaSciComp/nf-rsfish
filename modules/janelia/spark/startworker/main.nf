@@ -1,17 +1,14 @@
 process SPARK_STARTWORKER {
     container 'docker.io/biocontainers/spark:3.1.3_cv1'
-    cpus { worker_cores }
-    // 1 GB of overhead for Spark, the rest for executors
-    memory "${worker_mem_in_gb+1} GB"
+    cpus { spark.worker_cores }
+    memory { spark.worker_memory }
 
     input:
-    tuple val(spark_uri), path(cluster_work_dir), val(worker_id)
+    tuple val(meta), val(spark), val(worker_id)
     path(data_dir)
-    val(worker_cores)
-    val(worker_mem_in_gb)
 
     output:
-    val(spark_uri)
+    tuple val(meta), val(spark), val(worker_id)
 
     when:
     task.ext.when == null || task.ext.when
@@ -19,11 +16,15 @@ process SPARK_STARTWORKER {
     script:
     args = task.ext.args ?: ''
     sleep_secs = task.ext.sleep_secs ?: '1'
-    spark_worker_log_file = "${cluster_work_dir}/sparkworker-${worker_id}.log"
-    spark_config_filepath = "${cluster_work_dir}/spark-defaults.conf"
-    terminate_file_name = "${cluster_work_dir}/terminate-spark"
+    spark_worker_log_file = "${spark.work_dir}/sparkworker-${worker_id}.log"
+    spark_config_filepath = "${spark.work_dir}/spark-defaults.conf"
+    terminate_file_name = "${spark.work_dir}/terminate-spark"
+    worker_memory = spark.worker_memory.replace(" KB",'').replace(" MB",'').replace(" GB",'').replace(" TB",'')
     container_engine = workflow.containerEngine
     """
-    /opt/scripts/startworker.sh "$cluster_work_dir" "$spark_uri" $worker_id $worker_cores $worker_mem_in_gb "$spark_worker_log_file" "$spark_config_filepath" "$terminate_file_name" "$args" $sleep_secs $container_engine
+    /opt/scripts/startworker.sh "${spark.work_dir}" "${spark.uri}" $worker_id \
+        ${spark.worker_cores} ${worker_memory} \
+        "$spark_worker_log_file" "$spark_config_filepath" "$terminate_file_name" \
+        "$args" $sleep_secs $container_engine
     """
 }

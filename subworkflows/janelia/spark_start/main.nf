@@ -1,4 +1,7 @@
-include { SPARK_CLUSTER } from '../spark_cluster/main'
+include { SPARK_STARTMANAGER   } from '../../../modules/janelia/spark/startmanager/main'
+include { SPARK_WAITFORMANAGER } from '../../../modules/janelia/spark/waitformanager/main'
+include { SPARK_STARTWORKER    } from '../../../modules/janelia/spark/startworker/main'
+include { SPARK_WAITFORWORKER  } from '../../../modules/janelia/spark/waitforworker/main'
 
 /**
  * Prepares a Spark context using either a distributed cluster or single process
@@ -10,9 +13,10 @@ include { SPARK_CLUSTER } from '../spark_cluster/main'
  */
 workflow SPARK_START {
     take:
-    ch_meta               // channel: [ val(meta), [ files ] ]
-    data_dirs             // path: [ array of /path/to/dir mounted to the Spark workers ]
-    spark_cluster         // boolean: start a distributed cluster?
+    ch_meta               // channel: [ val(meta) ]
+    working_dir           // path: shared storage path for worker communication
+    data_dirs             // path: [ array of paths to be mounted to the Spark workers ]
+    spark_cluster         // boolean: use a distributed cluster?
     spark_workers         // int: number of workers in the cluster (ignored if spark_cluster is false)
     spark_worker_cores    // int: number of cores per worker
     spark_gb_per_core     // int: number of GB of memory per worker core
@@ -21,55 +25,67 @@ workflow SPARK_START {
 
     main:
 
-    spark_work_dirs = ch_meta.map { it[0].spark_work_dir }
+    // Create a Spark context for each meta
+    def meta_and_sparks = ch_meta.map {
+        def meta = it[0]
+        def spark_work_dir = "${working_dir}/spark/${workflow.sessionId}/${meta.id}" 
+        file(spark_work_dir).mkdirs()
+        def spark = [:]
+        spark.work_dir = spark_work_dir
+        spark.workers = spark_workers ?: 1
+        spark.worker_cores = spark_worker_cores
+        spark.driver_cores = spark_driver_cores ?: 1
+        spark.driver_memory = spark_driver_memory
+        spark.parallelism = (spark_workers * spark_worker_cores)
+        // 1 GB of overhead for Spark, the rest for executors
+        spark.worker_memory = (spark_worker_cores * spark_gb_per_core + 1)+" GB"
+        spark.executor_memory = (spark_worker_cores * spark_gb_per_core)+" GB"
+        [meta, spark]
+    }
 
     if (spark_cluster) {
-        workers = spark_workers
-        driver_cores = spark_driver_cores
-        driver_memory = spark_driver_memory
-        spark_cluster_res = SPARK_CLUSTER(
-            spark_work_dirs,
-            data_dirs,
-            workers,
-            spark_worker_cores,
-            spark_gb_per_core
-        )
+        // start the Spark manager
+        // this runs indefinitely until SPARK_TERMINATE is called
+        SPARK_STARTMANAGER(meta_and_sparks)
+
+        // start a watcher that waits for the manager to be ready
+        SPARK_WAITFORMANAGER(meta_and_sparks)
+
+        // cross product all worker directories with all worker numbers
+        def worker_list = 1..spark_workers
+        def meta_workers = SPARK_WAITFORMANAGER.out.map {
+            def (meta, spark, spark_uri) = it
+            spark.uri = spark_uri
+            [meta, spark]
+        }
+        | combine(worker_list)
+
+        // start workers
+        // these run indefinitely until SPARK_TERMINATE is called
+        SPARK_STARTWORKER(meta_workers, data_dirs)
+
+        // wait for all workers to start
+        spark_cluster_res = SPARK_WAITFORWORKER(meta_workers).groupTuple(by: [0,1])
     }
     else {
         // When running locally, the driver needs enough resources to run a spark worker
-        workers = 1
-        driver_cores = spark_driver_cores + spark_worker_cores
-        driver_memory = (2 + spark_worker_cores * spark_gb_per_core) + " GB"
-        spark_cluster_res = spark_work_dirs.map { [ 'local[*]', it ] }
+        spark_cluster_res = meta_and_sparks.map {
+            def (meta, spark) = it
+            spark.workers = 1
+            spark.driver_cores = spark_driver_cores + spark_worker_cores
+            spark.driver_memory = (2 + spark_worker_cores * spark_gb_per_core) + " GB"
+            spark.uri = 'local[*]'
+            [meta, spark]
+        }
     }
 
-    log.debug "Setting workers: $workers"
-    log.debug "Setting driver_cores: $driver_cores"
-    log.debug "Setting driver_memory: $driver_memory"
+    spark_context = spark_cluster_res.map {
+        def (meta, spark) = it
+        log.debug "Created Spark context for ${meta.id}: "+spark
+        [meta, spark]
+    }
 
-    // Rejoin Spark clusters to metas
-    // channel: [ meta, spark_work_dir, spark_uri ]
-    spark_context = ch_meta.map {
-        def (meta, files) = it
-        log.debug "Prepared $meta.id"
-        [meta, meta.spark_work_dir, files]
-    }
-    .join(spark_cluster_res, by:1)
-    .map {
-        def (spark_work_dir, meta, files, spark_uri) = it
-        def spark = [:]
-        spark.uri = spark_uri
-        spark.work_dir = spark_work_dir
-        spark.workers = workers ?: 1
-        spark.worker_cores = spark_worker_cores
-        spark.driver_cores = driver_cores ?: 1
-        spark.driver_memory = driver_memory
-        spark.parallelism = (workers * spark_worker_cores)
-        spark.executor_memory = (spark_worker_cores * spark_gb_per_core)+" GB"
-        log.debug "Assigned Spark context for ${meta.id}: "+spark
-        [meta, files, spark]
-    }
 
     emit:
-    spark_context // channel: [ val(meta), [ files ], val(spark_context) ]
+    spark_context // channel: [ val(meta), val(spark) ]
 }

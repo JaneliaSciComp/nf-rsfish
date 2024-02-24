@@ -3,10 +3,10 @@ process SPARK_STARTMANAGER {
     container 'docker.io/biocontainers/spark:3.1.3_cv1'
 
     input:
-    path(cluster_work_dir)
+    tuple val(meta), val(spark)
 
     output:
-    val(cluster_work_fullpath)
+    tuple val(meta), val(spark)
 
     when:
     task.ext.when == null || task.ext.when
@@ -15,13 +15,12 @@ process SPARK_STARTMANAGER {
     args = task.ext.args ?: ''
     spark_local_dir = task.ext.spark_local_dir ?: "/tmp/spark-${workflow.sessionId}"
     sleep_secs = task.ext.sleep_secs ?: '1'
-    spark_config_filepath = "${cluster_work_dir}/spark-defaults.conf"
-    spark_master_log_file = "${cluster_work_dir}/sparkmaster.log"
-    terminate_file_name = "${cluster_work_dir}/terminate-spark"
+    spark_config_filepath = "${spark.work_dir}/spark-defaults.conf"
+    spark_master_log_file = "${spark.work_dir}/sparkmaster.log"
+    terminate_file_name = "${spark.work_dir}/terminate-spark"
     container_engine = workflow.containerEngine
-    cluster_work_fullpath = cluster_work_dir.resolveSymLink().toString()
     """
-    /opt/scripts/startmanager.sh "$spark_local_dir" "$cluster_work_dir" "$spark_master_log_file" \
+    /opt/scripts/startmanager.sh "$spark_local_dir" "${spark.work_dir}" "$spark_master_log_file" \
         "$spark_config_filepath" "$terminate_file_name" "$args" $sleep_secs $container_engine
     """
 }

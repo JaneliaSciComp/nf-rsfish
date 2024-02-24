@@ -58,13 +58,12 @@ workflow RS_FISH_SPARK {
 
     meta = [:]
     meta.id = file(final_params.input_image).getBaseName()
-    meta.spark_work_dir = "${final_params.outdir}/spark/${workflow.sessionId}/${meta.id}"
-    file(meta.spark_work_dir).mkdirs()
     ch_input = Channel.of([meta])
     spark_mounted_dirs = [final_params.input_image, final_params.outdir]
 
     SPARK_START(
         ch_input,
+        final_params.outdir,
         spark_mounted_dirs,
         params.spark_cluster,
         params.spark_workers as int,
@@ -75,15 +74,17 @@ workflow RS_FISH_SPARK {
     )
 
     RS_FISH(SPARK_START.out.map {
-        def (meta, files, spark) = it
+        def (meta, spark) = it
         [meta, final_params.input_image, params.input_dataset, spark]
     })
     ch_versions = ch_versions.mix(RS_FISH.out.versions)
 
-    done = SPARK_STOP(RS_FISH.out.params.map {
+    rsfish_out = RS_FISH.out.params.map {
         def (meta, input_image, input_dataset, spark) = it
-        [meta, spark_mounted_dirs, spark]
-    })
+        [meta, spark]
+    }
+
+    SPARK_STOP(rsfish_out, params.spark_cluster)
 
     //
     // MODULE: Pipeline reporting

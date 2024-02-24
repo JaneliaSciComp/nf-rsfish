@@ -7,10 +7,10 @@ process SPARK_WAITFORMANAGER {
     maxRetries 20
 
     input:
-    path(cluster_work_dir)
+    tuple val(meta), val(spark)
 
     output:
-    tuple env(spark_uri), val(cluster_work_fullpath)
+    tuple val(meta), val(spark), env(spark_uri)
 
     when:
     task.ext.when == null || task.ext.when
@@ -18,9 +18,8 @@ process SPARK_WAITFORMANAGER {
     script:
     sleep_secs = task.ext.sleep_secs ?: '1'
     max_wait_secs = task.ext.max_wait_secs ?: '3600'
-    spark_master_log_name = "${cluster_work_dir}/sparkmaster.log"
-    terminate_file_name = "${cluster_work_dir}/terminate-spark"
-    cluster_work_fullpath = cluster_work_dir.resolveSymLink().toString()
+    spark_master_log_name = "${spark.work_dir}/sparkmaster.log"
+    terminate_file_name = "${spark.work_dir}/terminate-spark"
     """
     /opt/scripts/waitformanager.sh "$spark_master_log_name" "$terminate_file_name" $sleep_secs $max_wait_secs
     export spark_uri=`cat spark_uri`

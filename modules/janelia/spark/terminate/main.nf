@@ -3,14 +3,13 @@ process SPARK_TERMINATE {
     container 'docker.io/biocontainers/spark:3.1.3_cv1'
 
     input:
-    tuple val(spark_uri), path(cluster_work_dir)
+    tuple val(meta), val(spark)
 
     output:
-    tuple val(spark_uri), val(cluster_work_fullpath)
+    tuple val(meta), val(spark)
 
     script:
-    cluster_work_fullpath = cluster_work_dir.resolveSymLink().toString()
-    terminate_file_name = "${cluster_work_dir}/terminate-spark"
+    terminate_file_name = "${spark.work_dir}/terminate-spark"
     """
     /opt/scripts/terminate.sh "$terminate_file_name"
     """
