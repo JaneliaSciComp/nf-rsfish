@@ -13,16 +13,15 @@ input:
   - ch_meta:
       type: tuple
       description: |
-        Channel of tuples where the first item is the meta map, then a 
-        list of related files, and finally a spark_context map. Only the 
-        third item is used by this subworkflow. 
-        Structure: [ val(meta), [ files ], val(spark_context) ]
+        Channel of tuples where the first item is the meta map, and the second is a 
+        a spark context map.
+        Structure: [ val(meta), val(spark) ]
 
 output:
   - done:
       type: tuple
       description: |
-        The Spark work directory that was terminated. 
+        Same as the input tuple.
 
 authors:
   - "@krokicki"

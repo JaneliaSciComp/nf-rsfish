@@ -8,16 +8,16 @@ keywords:
   - bigdata
   - infrastructure
 components: []
-subworkflows:
-  - spark_cluster
 input:
   - ch_meta:
       type: tuple
       description: |
-        Channel of tuples where the first item is the meta map which 
-        contains a "spark_work_dir" field.
-        Structure: [ val(meta), [ files ] ]
-  - data_dir:
+        Channel of tuples containing a meta map
+        Structure: [ val(meta) ]
+  - working_dir:
+      type: path
+      description: Path shared by workers for logging and jar distribution
+  - data_dirs:
       type: path
       description: Paths to be mounted in the Spark workers for data access
   - spark_cluster:
@@ -44,7 +44,7 @@ output:
       type: tuple
       description: |
         The tuple from input ch_meta with the spark_context map appended.
-        Structure: [ val(meta), [ files ], val(spark_context) ]
+        Structure: [ val(meta), val(spark_context) ]
 
 authors:
   - "@krokicki"
