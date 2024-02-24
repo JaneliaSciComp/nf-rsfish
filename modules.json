@@ -1,0 +1,92 @@
+{
+    "name": "JaneliaSciComp/nf-rsfish",
+    "homePage": "https://github.com/JaneliaSciComp/nf-rsfish",
+    "repos": {
+        "git@github.com:JaneliaSciComp/nextflow-modules.git": {
+            "modules": {
+                "janelia": {
+                    "spark/prepare": {
+                        "branch": "main",
+                        "git_sha": "02486227e4b18a960ab6483550700b9f7dfc26f8",
+                        "installed_by": [
+                            "spark_cluster"
+                        ]
+                    },
+                    "spark/startmanager": {
+                        "branch": "main",
+                        "git_sha": "02486227e4b18a960ab6483550700b9f7dfc26f8",
+                        "installed_by": [
+                            "spark_cluster"
+                        ]
+                    },
+                    "spark/startworker": {
+                        "branch": "main",
+                        "git_sha": "02486227e4b18a960ab6483550700b9f7dfc26f8",
+                        "installed_by": [
+                            "spark_cluster"
+                        ]
+                    },
+                    "spark/terminate": {
+                        "branch": "main",
+                        "git_sha": "02486227e4b18a960ab6483550700b9f7dfc26f8",
+                        "installed_by": [
+                            "spark_stop"
+                        ]
+                    },
+                    "spark/waitformanager": {
+                        "branch": "main",
+                        "git_sha": "02486227e4b18a960ab6483550700b9f7dfc26f8",
+                        "installed_by": [
+                            "spark_cluster"
+                        ]
+                    },
+                    "spark/waitforworker": {
+                        "branch": "main",
+                        "git_sha": "02486227e4b18a960ab6483550700b9f7dfc26f8",
+                        "installed_by": [
+                            "spark_cluster"
+                        ]
+                    }
+                }
+            },
+            "subworkflows": {
+                "janelia": {
+                    "spark_cluster": {
+                        "branch": "main",
+                        "git_sha": "06caac8571faa8bc5e682aa2e6c46b86e6509974",
+                        "installed_by": [
+                            "spark_start"
+                        ]
+                    },
+                    "spark_start": {
+                        "branch": "main",
+                        "git_sha": "9396547b628f95366630889ad06140838f3c5125",
+                        "installed_by": [
+                            "subworkflows"
+                        ]
+                    },
+                    "spark_stop": {
+                        "branch": "main",
+                        "git_sha": "2687e4b1497388f03952722e0c5ade6a217361b4",
+                        "installed_by": [
+                            "subworkflows"
+                        ]
+                    }
+                }
+            }
+        },
+        "https://github.com/nf-core/modules.git": {
+            "modules": {
+                "nf-core": {
+                    "custom/dumpsoftwareversions": {
+                        "branch": "master",
+                        "git_sha": "8ec825f465b9c17f9d83000022995b4f7de6fe93",
+                        "installed_by": [
+                            "modules"
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}
