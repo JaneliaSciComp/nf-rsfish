@@ -20,11 +20,14 @@ To [install Singularity](https://sylabs.io/guides/3.7/admin-guide/installation.h
 
 Now you can run the pipeline and it will download everything else it needs. The following command will analyze one input image in N5 format and save a CSV of detected spots to the `./output` directory. 
 
-    nextflow run JaneliaSciComp/nf-rsfish --input_image /path/to/image.n5 --input_dataset /c0/s0 --outdir ./output -profile singularity
+    nextflow run JaneliaSciComp/nf-rsfish --input_image /path/to/image.n5 \
+        --input_dataset /c0/s0 --outdir ./output -profile singularity
 
 By default, the pipeline runs a local Java process. To scale to larger data sizes, you can run with a Spark cluster, e.g.
 
-    nextflow run JaneliaSciComp/nf-rsfish --input_image /path/to/image.n5 --input_dataset /c0/s0 --outdir ./output -profile janelia --spark_cluster=true --spark_workers=2 --spark_worker_cores=4 --spark_gb_per_core=15
+    nextflow run JaneliaSciComp/nf-rsfish --input_image /path/to/image.n5 \
+        --input_dataset /c0/s0 --outdir ./output -profile janelia \
+        --spark_cluster=true --spark_workers=2 --spark_worker_cores=4 --spark_gb_per_core=15
 
 
 ## Interactive Parameter Finding
