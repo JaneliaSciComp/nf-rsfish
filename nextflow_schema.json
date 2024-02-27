@@ -32,26 +32,10 @@
                     "description": "The output directory where the results will be saved. You have to use absolute paths to storage on Cloud infrastructure.",
                     "fa_icon": "fas fa-folder-open"
                 },
-                "min_intensity": {
-                    "type": "integer",
-                    "description": "Minimal intensity of the image. If min=max, the range will be computed from the image per-block. Default: 0",
-                    "fa_icon": "fas fa-less-than"
-                },
-                "max_intensity": {
-                    "type": "integer",
-                    "description": "Maximum intensity of the image. If min=max, the range will be computed from the image per-block. Default: 0",
-                    "fa_icon": "fas fa-greater-than"
-                },
-                "anisotropy": {
-                    "type": "number",
-                    "description": "The anisotropy factor describing the scaling of z relative to xy. Default: 1.0",
-                    "help": "Can be determined using the RS-FISH plugin in Fiji.",
-                    "fa_icon": "fas fa-cube"
-                },
                 "rsfish_opts": {
                     "type": "string",
-                    "description": "Extra options for RS-FISH.",
-                    "help": "Extra options can be found here: https://github.com/PreibischLab/RS-FISH-Spark/blob/main/src/main/java/net/preibisch/rsfish/spark/SparkRSFISH.java",
+                    "description": "Options for RS-FISH",
+                    "help": "Options can be found here: https://github.com/PreibischLab/RS-FISH-Spark/blob/main/src/main/java/net/preibisch/rsfish/spark/SparkRSFISH.java",
                     "fa_icon": "fas fa-cube"
                 }
             }
