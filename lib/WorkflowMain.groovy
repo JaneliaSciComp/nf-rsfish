@@ -13,7 +13,7 @@ class WorkflowMain {
     public static String citation(workflow) {
         return "If you use ${workflow.manifest.name} for your analysis please cite:\n\n" +
             "* RS-FISH\n" +
-            "  https://doi.org/10.1038/s41592-022-01669-y\n\n" +
+            "  http://dx.doi.org/10.1038/s41592-022-01669-y\n\n" +
             "* The nf-core framework\n" +
             "  https://doi.org/10.1038/s41587-020-0439-x\n\n" 
     }
