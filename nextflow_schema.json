@@ -17,7 +17,7 @@
             "properties": {
                 "input_image": {
                     "type": "string",
-                    "format": "directory-path",
+                    "format": "path",
                     "description": "N5/HDF5/ZARR container path to be processed.",
                     "fa_icon": "fas fa-file-csv"
                 },
